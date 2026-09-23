@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FCúbica · Arquitectura y desarrollo inmobiliario</title>
+<meta name="description" content="Casa 501 en preventa en Jalpa de Cánovas, Guanajuato. Casa de una planta diseñada a la medida de su terreno de 2,000 m², con precio de obra fijo y entrega en 8 meses.">
+<meta property="og:title" content="FCúbica · Casa 501">
+<meta property="og:description" content="Casa de una planta en Jalpa de Cánovas, diseñada a la medida de su terreno. Preventa abierta.">
+<meta property="og:image" content="img/casa501-jardin.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none' stroke='%231A1A18' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M16 3 28 9.5v13L16 29 4 22.5v-13L16 3Z'/%3E%3Cpath d='M4 9.5 16 16l12-6.5M16 16v13'/%3E%3C/svg%3E">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --ink:#1A1A18;
+  --ink-2:#3A3A36;
+  --muted:#8A8880;
+  --faint:#B8B6AE;
+  --line:#E6E4DE;
+  --paper:#FFFFFF;
+  --paper-2:#F6F5F2;
+  --sans:"Space Grotesk","Helvetica Neue",Arial,sans-serif;
+  --mono:"Space Mono",ui-monospace,Menlo,Consolas,monospace;
+  --gutter:clamp(16px,2.4vw,36px);
+  --maxw:1480px;
+  --hdr:76px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+h1,h2,h3{font-weight:500;letter-spacing:-.025em;line-height:1.02;margin:0;text-wrap:balance}
+p{margin:0}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--gutter)}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:46px;padding-inline:26px;font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;transition:background .2s,color .2s,border-color .2s;white-space:nowrap}
+.btn-dark{background:var(--ink);color:var(--paper)}
+.btn-dark:hover{background:var(--ink-2)}
+.btn-light{background:var(--paper);color:var(--ink)}
+.btn-light:hover{background:var(--paper-2)}
+.btn-line{border:1px solid var(--ink);color:var(--ink)}
+.btn-line:hover{background:var(--ink);color:var(--paper)}
+.link-arrow{display:inline-flex;gap:10px;align-items:center;font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid currentColor;transition:gap .2s}
+.link-arrow:hover{gap:16px}
+
+/* Header */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:50;padding-top:env(safe-area-inset-top,0px);background:var(--paper);border-bottom:1px solid var(--line);transition:background .3s,border-color .3s,color .3s}
+.hdr-in{height:var(--hdr);display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.logo{display:flex;align-items:center;gap:12px;font-weight:600;font-size:15px;letter-spacing:.01em}
+.logo svg{width:28px;height:28px;flex:none}
+.nav{display:flex;gap:40px}
+.nav a{font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);position:relative;padding-block:6px}
+.nav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .25s}
+.nav a:hover::after,.nav a[aria-current="page"]::after{transform:scaleX(1)}
+.hdr-cta{justify-self:end}
+.menu-btn{display:none;justify-self:end;width:44px;height:44px;align-items:center;justify-content:center}
+.menu-btn span{display:block;width:22px;height:1px;background:currentColor;position:relative}
+.menu-btn span::before,.menu-btn span::after{content:"";position:absolute;left:0;width:22px;height:1px;background:currentColor}
+.menu-btn span::before{top:-7px}.menu-btn span::after{top:7px}
+.hdr.over{background:transparent;border-color:transparent;color:#fff}
+.hdr.over .nav a{color:rgba(255,255,255,.85)}
+.hdr.over .hdr-cta{background:#fff;color:var(--ink)}
+.mobile-nav{position:fixed;inset:0;z-index:60;background:var(--ink);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 24px) var(--gutter) 40px;display:flex;flex-direction:column;gap:8px}
+.mobile-nav[hidden]{display:none}
+.mobile-nav .top{display:flex;justify-content:space-between;align-items:center;height:var(--hdr);margin-top:-24px;margin-bottom:24px}
+.mobile-nav a.big{font-size:44px;font-weight:500;letter-spacing:-.03em;padding-block:6px;border-bottom:1px solid rgba(255,255,255,.12)}
+.mobile-nav .foot{margin-top:auto;color:rgba(255,255,255,.6)}
+
+/* Art placeholders */
+.art{position:relative;overflow:hidden;background:#2a2a27}
+.art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;max-width:none}
+.art svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.art .tag{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7);background:rgba(26,26,24,.45);padding:5px 8px;backdrop-filter:blur(4px)}
+
+/* Hero */
+.hero{position:relative;min-height:min(92vh,820px);display:flex;align-items:flex-end;color:#fff}
+.hero .art{position:absolute;inset:0}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,15,14,.62) 0%,rgba(15,15,14,.25) 55%,rgba(15,15,14,.1) 100%),linear-gradient(0deg,rgba(15,15,14,.45),transparent 40%)}
+.hero-in{position:relative;width:100%;padding-block:calc(var(--hdr) + 80px) 72px}
+.hero .eyebrow{color:rgba(255,255,255,.8);margin-bottom:28px}
+.hero h1{font-size:clamp(64px,10.5vw,168px);font-weight:500;letter-spacing:-.045em;line-height:.9}
+.hero-row{display:flex;flex-wrap:wrap;align-items:center;gap:20px 24px;margin-top:44px}
+.hero-row p{max-width:320px;color:rgba(255,255,255,.88);font-size:15px}
+.scroll-cue{position:absolute;right:var(--gutter);bottom:40px;writing-mode:vertical-rl;font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;color:rgba(255,255,255,.7);display:flex;gap:10px;align-items:center}
+
+/* Sections */
+.sec{padding-block:clamp(72px,10vw,140px)}
+.sec-head{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:24px var(--gutter);align-items:end;margin-bottom:clamp(40px,6vw,80px)}
+.sec-head h2{font-size:clamp(38px,5vw,72px)}
+.sec-head .lede{color:var(--ink-2);max-width:520px;font-size:17px}
+.sec-num{margin-bottom:22px}
+
+/* Portfolio rows */
+.pf-row{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:var(--gutter);padding-block:16px}
+.pf-meta{position:sticky;top:calc(var(--hdr) + 60px);align-self:start;padding-top:48px;display:flex;flex-direction:column;gap:14px}
+.pf-meta .count{color:var(--faint)}
+.pf-meta .state{color:var(--ink)}
+.pf-meta h3{font-size:clamp(38px,4.4vw,64px);margin-top:4px}
+.pf-meta .place{font-size:19px;color:var(--muted)}
+.pf-meta .area{color:var(--faint)}
+.pf-meta .link-arrow{align-self:flex-start;margin-top:18px}
+.pf-img{display:block;aspect-ratio:16/10;max-width:100%}
+.pf-img .art{height:100%;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.pf-img:hover .art{transform:scale(1.015)}
+.pf-foot{display:flex;justify-content:flex-end;margin-top:56px}
+
+/* Why */
+.why{background:var(--paper-2)}
+.why-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--ink)}
+.why-item{padding:28px 28px 40px 0;display:flex;flex-direction:column;gap:18px}
+.why-item + .why-item{padding-left:28px;border-left:1px solid var(--line)}
+.why-item .ico{width:40px;height:40px}
+.why-item h3{font-size:24px;letter-spacing:-.015em}
+.why-item p{color:var(--ink-2);font-size:15px}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+.stat{padding:8px 24px 8px 0;display:flex;flex-direction:column;gap:14px}
+.stat + .stat{padding-left:28px;border-left:1px solid var(--line)}
+.stat .n{font-size:clamp(56px,7vw,112px);font-weight:400;letter-spacing:-.05em;line-height:.9;font-variant-numeric:tabular-nums}
+.stat .n sup{font-size:.36em;letter-spacing:0;vertical-align:top;position:relative;top:.35em;margin-left:4px}
+
+/* Paths */
+.paths{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter)}
+.path{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:540px;color:#fff;padding:clamp(24px,3vw,44px);overflow:hidden}
+.path .art{position:absolute;inset:0;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.path:hover .art{transform:scale(1.03)}
+.path .shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(15,15,14,.78),rgba(15,15,14,.1) 65%)}
+.path > *:not(.art):not(.shade){position:relative}
+.path .mono{color:rgba(255,255,255,.75);margin-bottom:16px}
+.path h3{font-size:clamp(34px,3.6vw,52px);margin-bottom:16px}
+.path p{max-width:420px;color:rgba(255,255,255,.85);margin-bottom:28px}
+.path .link-arrow{align-self:flex-start}
+
+/* CTA band */
+.band{background:var(--ink);color:#fff}
+.band-in{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:32px;align-items:end;padding-block:clamp(72px,9vw,120px)}
+.band h2{font-size:clamp(40px,5.6vw,84px);letter-spacing:-.04em}
+.band .label{color:rgba(255,255,255,.55);margin-bottom:24px}
+.band-side{display:flex;flex-direction:column;gap:20px;align-items:flex-start}
+.band-side p{color:rgba(255,255,255,.75)}
+
+/* Footer */
+.ftr{background:var(--ink);color:rgba(255,255,255,.72);border-top:1px solid rgba(255,255,255,.1);padding-block:64px 40px}
+.ftr-grid{display:grid;grid-template-columns:minmax(0,4fr) repeat(3,minmax(0,2.66fr));gap:32px var(--gutter)}
+.ftr .logo{color:#fff;margin-bottom:18px}
+.ftr .label{color:rgba(255,255,255,.4);margin-bottom:16px}
+.ftr ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ftr a:hover{color:#fff}
+.ftr-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;margin-top:64px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1)}
+.ftr-bottom .mono{color:rgba(255,255,255,.4);font-size:10.5px}
+
+/* Page headers (inner pages) */
+.page-top{padding-top:calc(var(--hdr) + clamp(56px,8vw,110px));padding-bottom:clamp(40px,5vw,72px);border-bottom:1px solid var(--line)}
+.page-top h1{font-size:clamp(52px,8vw,128px);letter-spacing:-.045em;line-height:.92}
+.page-top .row{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:24px var(--gutter);align-items:end}
+.page-top .lede{color:var(--ink-2);font-size:17px;max-width:420px}
+
+/* Filters + grid */
+.filters{display:flex;flex-wrap:wrap;gap:8px;padding-block:28px}
+.chip{height:38px;padding-inline:16px;border:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);transition:all .2s}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.grid-proj{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:64px var(--gutter);padding-bottom:clamp(72px,10vw,140px)}
+.card{display:flex;flex-direction:column;gap:18px}
+.grid-proj.one{grid-template-columns:1fr}
+.grid-proj.one .card .art{aspect-ratio:2.9/1}
+.card .art{aspect-ratio:4/3;max-width:100%;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.card .img{overflow:hidden}
+.card:hover .art{transform:scale(1.02)}
+.card .top{display:flex;justify-content:space-between;gap:12px}
+.card h3{font-size:clamp(28px,2.6vw,38px)}
+.card .place{color:var(--muted)}
+
+/* Project detail */
+.pd-banner{margin-top:calc(var(--hdr) + env(safe-area-inset-top,0px));height:clamp(280px,48vw,620px)}
+.pd-banner .art{height:100%}
+.pd-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px var(--gutter);padding-block:56px;border-bottom:1px solid var(--line)}
+.pd-meta .label{margin-bottom:12px;color:var(--faint)}
+.pd-meta h1{font-size:clamp(32px,2.6vw,40px);letter-spacing:-.02em}
+.pd-meta .v{font-size:15px}
+.pd-meta .v.mono{font-size:11.5px}
+.pd-desc{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:24px var(--gutter);padding-block:clamp(56px,8vw,110px)}
+.pd-desc .label{color:var(--faint)}
+.pd-desc p{font-size:clamp(19px,1.6vw,23px);line-height:1.5;color:var(--ink-2);max-width:680px}
+.pd-desc p + p{margin-top:20px}
+.pd-gal{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--gutter);padding-bottom:clamp(56px,8vw,110px)}
+.pd-gal .a{grid-column:1 / span 7;aspect-ratio:4/3}
+.pd-gal .b{grid-column:8 / span 5;aspect-ratio:4/5;align-self:end}
+.pd-gal .c{grid-column:1 / -1;aspect-ratio:2.9/1}
+.pd-gal .art{max-width:100%}
+.pd-specs{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:24px var(--gutter);padding-bottom:clamp(56px,8vw,110px)}
+.spec-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--ink)}
+.spec{display:flex;justify-content:space-between;gap:16px;padding-block:16px;border-bottom:1px solid var(--line)}
+.spec:nth-child(odd){padding-right:24px}
+.spec:nth-child(even){padding-left:24px;border-left:1px solid var(--line)}
+.spec .k{color:var(--muted)}
+.spec .val{font-variant-numeric:tabular-nums;text-align:right}
+.pd-next{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;padding-block:56px;border-top:1px solid var(--line)}
+.pd-next h2{font-size:clamp(40px,6vw,96px);letter-spacing:-.04em;transition:opacity .2s}
+.pd-next h2{max-width:900px}
+
+/* About */
+.about-intro{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:24px var(--gutter);padding-block:clamp(56px,8vw,110px)}
+.about-intro .big{font-size:clamp(26px,2.8vw,40px);line-height:1.2;letter-spacing:-.02em;max-width:900px;text-wrap:pretty}
+.about-intro .body{margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:24px;color:var(--ink-2);max-width:900px}
+.process{border-top:1px solid var(--ink)}
+.step{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,3fr) minmax(0,5fr);gap:16px var(--gutter);padding-block:32px;border-bottom:1px solid var(--line);align-items:baseline}
+.step h3{font-size:clamp(26px,2.4vw,34px)}
+.step p{color:var(--ink-2)}
+.team{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:40px var(--gutter)}
+.person .art{aspect-ratio:3/4;max-width:100%;margin-bottom:18px}
+.person h3{font-size:22px;letter-spacing:-.01em;margin-bottom:6px}
+
+/* Contact */
+.contact{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:48px var(--gutter);padding-block:clamp(56px,8vw,110px)}
+.c-info{display:flex;flex-direction:column;gap:32px}
+.c-info .v{font-size:20px;letter-spacing:-.01em;user-select:all}
+.c-info .label{margin-bottom:8px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:28px 24px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field.full{grid-column:1 / -1}
+.field label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.field input,.field select,.field textarea{font:inherit;font-size:17px;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);padding:10px 0;border-radius:0;outline:none;transition:border-color .2s;width:100%}
+.field textarea{resize:vertical;min-height:120px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ink)}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.form-end{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;margin-top:8px}
+.form-end small{color:var(--muted);max-width:360px}
+.sent{grid-column:1 / -1;border-top:1px solid var(--ink);padding-top:28px}
+.sent h3{font-size:34px;margin-bottom:12px}
+.sent p{color:var(--ink-2);max-width:520px}
+
+/* Reveal */
+@media (prefers-reduced-motion:no-preference){
+  .rise{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
+  .rise.d1{animation-delay:.08s}.rise.d2{animation-delay:.16s}.rise.d3{animation-delay:.24s}
+  @keyframes rise{from{opacity:.001;transform:translateY(18px)}to{opacity:1;transform:none}}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* Responsive */
+@media (max-width:1024px){
+  .why-grid,.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .why-item:nth-child(3){padding-left:0;border-left:0}
+  .why-item:nth-child(n+3){border-top:1px solid var(--line)}
+  .stat:nth-child(3){padding-left:0;border-left:0}
+  .stat:nth-child(n+3){margin-top:40px}
+  .team{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ftr-grid{grid-template-columns:1fr 1fr}
+  .ftr-grid > :first-child{grid-column:1 / -1}
+}
+@media (max-width:860px){
+  .nav,.hdr-cta{display:none}
+  .menu-btn{display:inline-flex}
+  .hdr-in{grid-template-columns:1fr auto}
+  .sec-head,.page-top .row,.pd-desc,.pd-specs,.about-intro,.contact,.band-in{grid-template-columns:1fr}
+  .pf-row{grid-template-columns:1fr;gap:20px;padding-block:28px}
+  .pf-meta{position:static;padding-top:0;order:2}
+  .paths,.grid-proj{grid-template-columns:1fr}
+  .path{min-height:440px}
+  .pd-meta{grid-template-columns:1fr 1fr}
+  .pd-gal .a,.pd-gal .b,.pd-gal .c{grid-column:1 / -1}
+  .pd-gal .a,.pd-gal .b{aspect-ratio:4/3}
+  .pd-gal .c,.grid-proj.one .card .art{aspect-ratio:16/10}
+  .pf-img{aspect-ratio:4/3}
+  .step{grid-template-columns:1fr}
+  .about-intro .body{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .why-grid,.stats,.spec-list,.form{grid-template-columns:1fr}
+  .why-item + .why-item{padding-left:0;border-left:0;border-top:1px solid var(--line)}
+  .stat + .stat{padding-left:0;border-left:0;margin-top:36px}
+  .spec:nth-child(n){padding-inline:0;border-left:0}
+  .team{grid-template-columns:1fr 1fr;gap:28px 16px}
+  .ftr-grid{grid-template-columns:1fr}
+  .scroll-cue{display:none}
+  .hero-row .btn{width:100%}
+}
+</style>
+</head>
+<body>
+<header class="hdr" id="hdr">
+  <div class="wrap hdr-in">
+    <a href="#inicio" class="logo" aria-label="FCúbica, inicio">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M16 3 28 9.5v13L16 29 4 22.5v-13L16 3Z"/><path d="M4 9.5 16 16l12-6.5M16 16v13"/></svg>
+      <span>FCÚBICA</span>
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#proyectos" data-nav="proyectos">Proyectos</a>
+      <a href="#nosotros" data-nav="nosotros">Nosotros</a>
+      <a href="#contacto" data-nav="contacto">Contacto</a>
+    </nav>
+    <a href="#proyectos" class="btn btn-dark hdr-cta">Ver proyectos</a>
+    <button class="menu-btn" id="menuOpen" aria-label="Abrir menú"><span></span></button>
+  </div>
+</header>
+
+<div class="mobile-nav" id="mnav" hidden>
+  <div class="top">
+    <span class="logo"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M16 3 28 9.5v13L16 29 4 22.5v-13L16 3Z"/><path d="M4 9.5 16 16l12-6.5M16 16v13"/></svg>FCÚBICA</span>
+    <button class="mono" id="menuClose" style="color:#fff;height:44px">Cerrar ✕</button>
+  </div>
+  <a class="big" href="#inicio">Inicio</a>
+  <a class="big" href="#proyectos">Proyectos</a>
+  <a class="big" href="#nosotros">Nosotros</a>
+  <a class="big" href="#contacto">Contacto</a>
+  <div class="foot mono">hola@fcubica.mx · +52 55 0000 0000</div>
+</div>
+
+<main id="app"></main>
+
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr-grid">
+      <div>
+        <a href="#inicio" class="logo"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M16 3 28 9.5v13L16 29 4 22.5v-13L16 3Z"/><path d="M4 9.5 16 16l12-6.5M16 16v13"/></svg><span>FCÚBICA</span></a>
+        <p style="max-width:300px">Arquitectura y desarrollo inmobiliario. Construimos residencias con rigor conceptual y calidez humana.</p>
+      </div>
+      <div>
+        <div class="label">Sitio</div>
+        <ul><li><a href="#proyectos">Proyectos</a></li><li><a href="#nosotros">Nosotros</a></li><li><a href="#contacto">Contacto</a></li></ul>
+      </div>
+      <div>
+        <div class="label">Contacto</div>
+        <ul><li>+52 55 0000 0000</li><li>hola@fcubica.mx</li><li>Polanco, CDMX</li></ul>
+      </div>
+      <div>
+        <div class="label">Síguenos</div>
+        <ul><li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram ↗</a></li><li><a href="https://facebook.com" target="_blank" rel="noopener">Facebook ↗</a></li><li><a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn ↗</a></li></ul>
+      </div>
+    </div>
+    <div class="ftr-bottom">
+      <span class="mono">© 2026 FCúbica</span>
+      <span class="mono">Aviso de privacidad</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---------- Content (placeholders: replace with real data) ---------- */
+const PROJECTS = [
+  {slug:"casa-501",name:"Casa 501",place:"Jalpa de Cánovas, GTO",placeLong:"Jalpa de Cánovas, Purísima del Rincón, Guanajuato",state:"Preventa",year:2027,area:170,type:"Casa de campo",levels:1,rooms:2,baths:2,parking:2,lot:2000,delivery:"8 meses",
+   desc:["Casa de una sola planta diseñada a partir de su propio terreno de 2,000 m²: la vegetación existente, las vistas al cerro, el asoleamiento y los vientos dominantes definieron dónde va cada espacio.",
+         "Muros de piedra, aplanado de stucco, pérgolas de madera y bóvedas de ladrillo. La estancia integra sala, comedor y cocina y se abre por completo a una terraza con fogatero y jacuzzi.",
+         "Precio de construcción cerrado por contrato y entrega en 8 meses desde el inicio de obra. Terreno escriturable de inmediato y libre de gravamen, a una hora de León."],
+   imgs:{hero:"img/casa501-jardin.jpg",main:"img/casa501-acceso.jpg",terraza:"img/casa501-terraza.jpg"},
+   pal:"earth"}
+];
+
+/* ---------- Photos ---------- */
+function photo(src,alt,tag="Render"){
+  return `<div class="art photo"><img src="${src}" alt="${alt}" decoding="async">${tag?`<span class="tag">${tag}</span>`:""}</div>`;
+}
+
+/* ---------- Placeholder architectural art (swap for real photos) ---------- */
+const PALS={
+  dusk:{sky:["#5d6a86","#a7aec0"],ground:"#233021",vol:["#1d1d1b","#2a2622","#46423b"],win:"#f2c98a",tree:"#1a2419"},
+  day:{sky:["#8fb2d6","#dfe8ef"],ground:"#5b6b52",vol:["#b88a5c","#e9e6df","#1f1f1d"],win:"#56687a",tree:"#3d5237"},
+  earth:{sky:["#c9b79c","#efe6d6"],ground:"#9c8263",vol:["#b07a55","#d3b595","#6d4a35"],win:"#3a2b22",tree:"#6f7353"},
+  jungle:{sky:["#9fc2b4","#e7efe8"],ground:"#2f4a33",vol:["#e4ddd0","#c9b8a0","#7a6a57"],win:"#2c3a33",tree:"#264530"},
+  stone:{sky:["#8d98a3","#d8dcdf"],ground:"#6d706b",vol:["#9e9a92","#c8c4bb","#3b3b38"],win:"#2d3236",tree:"#4b5446"},
+  warm:{sky:["#c6a88a","#efe0cd"],ground:"#5c5a45",vol:["#efe9df","#a8674a","#2a2724"],win:"#3b2f28",tree:"#4d563c"}
+};
+function rng(seed){let s=seed%2147483647;if(s<=0)s+=2147483646;return()=>(s=s*16807%2147483647)/2147483647}
+function art(palKey,seed=1,label="Foto pendiente"){
+  const P=PALS[palKey]||PALS.dusk, r=rng(seed*97+13), id="g"+palKey+seed+Math.floor(r()*1e6);
+  const W=1600,H=1000,gy=780;
+  let s=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.sky[0]}"/><stop offset="1" stop-color="${P.sky[1]}"/></linearGradient></defs>`;
+  s+=`<rect width="${W}" height="${H}" fill="url(#${id})"/>`;
+  // background trees
+  for(let i=0;i<14;i++){const x=r()*W,y=gy-120-r()*260,rad=70+r()*140;s+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${rad.toFixed(0)}" fill="${P.tree}" opacity="${(.55+r()*.4).toFixed(2)}"/>`}
+  s+=`<rect y="${gy}" width="${W}" height="${H-gy}" fill="${P.ground}"/>`;
+  // building volumes
+  const bx=260+r()*200, bw=900+r()*200;
+  const lowH=230+r()*60, upH=220+r()*60, upX=bx+80+r()*120, upW=bw*.62;
+  s+=`<rect x="${bx}" y="${gy-lowH}" width="${bw}" height="${lowH}" fill="${P.vol[1]}"/>`;
+  s+=`<rect x="${upX}" y="${gy-lowH-upH}" width="${upW}" height="${upH}" fill="${P.vol[0]}"/>`;
+  s+=`<rect x="${upX-30}" y="${gy-lowH-upH-14}" width="${upW+60}" height="16" fill="${P.vol[2]}"/>`;
+  s+=`<rect x="${bx-24}" y="${gy-lowH-10}" width="${bw+48}" height="14" fill="${P.vol[2]}"/>`;
+  // glazing lower
+  const gx=bx+bw*.38, gw=bw*.52;
+  s+=`<rect x="${gx}" y="${gy-lowH+30}" width="${gw}" height="${lowH-30}" fill="${P.win}" opacity=".92"/>`;
+  for(let i=1;i<6;i++){s+=`<rect x="${(gx+gw*i/6-2).toFixed(0)}" y="${gy-lowH+30}" width="4" height="${lowH-30}" fill="${P.vol[0]}"/>`}
+  // slats / upper windows
+  for(let i=0;i<9;i++){const x=upX+40+i*(upW-80)/9;s+=`<rect x="${x.toFixed(0)}" y="${gy-lowH-upH+40}" width="${((upW-80)/9*.45).toFixed(0)}" height="${upH-70}" fill="${P.win}" opacity=".85"/>`}
+  // cladding lines on lower-left
+  for(let x=bx+20;x<gx-20;x+=14){s+=`<rect x="${x}" y="${gy-lowH+4}" width="2" height="${lowH-4}" fill="${P.vol[0]}" opacity=".18"/>`}
+  // foreground tree
+  const tx=r()<.5?bx-60-r()*80:bx+bw+60+r()*80;
+  s+=`<path d="M${tx} ${gy+40} C${tx-10} ${gy-200} ${tx+30} ${gy-420} ${tx-40} ${gy-700}" stroke="#d9d2c3" stroke-width="34" fill="none" stroke-linecap="round" opacity=".9"/>`;
+  s+=`<circle cx="${tx-60}" cy="${gy-740}" r="200" fill="${P.tree}" opacity=".8"/><circle cx="${tx+140}" cy="${gy-700}" r="160" fill="${P.tree}" opacity=".75"/>`;
+  s+=`</svg>`;
+  return `<div class="art">${s}${label?`<span class="tag">${label}</span>`:""}</div>`;
+}
+
+/* ---------- Helpers ---------- */
+const $=s=>document.querySelector(s);
+const idx=(i)=>String(i+1).padStart(2,"0");
+const byslug=s=>PROJECTS.find(p=>p.slug===s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- Views ---------- */
+function vHome(){
+  return `
+  <section class="hero" id="top">
+    ${photo(PROJECTS[0].imgs.hero,"Casa 501 vista desde el jardín","")}
+    <div class="shade"></div>
+    <div class="wrap hero-in">
+      <div class="mono eyebrow rise">Arquitectura y desarrollo inmobiliario</div>
+      <h1 class="rise d1">Habitar<br>el legado.</h1>
+      <div class="hero-row rise d2">
+        <a href="#proyectos" class="btn btn-light">Ver proyectos</a>
+        <p>Construimos residencias con rigor conceptual y calidez humana.</p>
+      </div>
+    </div>
+    <div class="scroll-cue">SCROLL <span>↓</span></div>
+  </section>
+
+  <section class="sec" id="portafolio">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="label sec-num">02 — Portafolio</div><h2>Proyecto<br>en preventa</h2></div>
+        <p class="lede">Una casa de campo de una planta en Jalpa de Cánovas, diseñada a la medida de su terreno. Inicio de obra inmediato.</p>
+      </div>
+      ${PROJECTS.map((p,i)=>`
+      <article class="pf-row">
+        <div class="pf-meta">
+          <span class="mono count">${idx(i)} / ${idx(PROJECTS.length-1)}</span>
+          <span class="mono state">Estado: ${esc(p.state)}</span>
+          <h3>${esc(p.name)}</h3>
+          <span class="place">${esc(p.place)}</span>
+          <span class="mono area">${p.area} m² construidos · ${p.lot.toLocaleString("es-MX")} m² de terreno</span>
+          <a class="link-arrow" href="#p-${p.slug}">Ver proyecto <span>↗</span></a>
+        </div>
+        <a class="pf-img" href="#p-${p.slug}" aria-label="Ver ${esc(p.name)}">${photo(p.imgs.main,esc(p.name)+", acceso con muros de piedra")}</a>
+      </article>`).join("")}
+      <div class="pf-foot"><a href="#p-casa-501" class="btn btn-line">Ver ficha completa</a></div>
+    </div>
+  </section>
+
+  <section class="sec why">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="label sec-num">03 — Por qué FCúbica</div><h2>Lo que cuidamos en cada obra</h2></div>
+        <p class="lede">Diseñamos y construimos bajo un mismo equipo. Así respondemos por el resultado de principio a fin.</p>
+      </div>
+      <div class="why-grid">
+        ${[
+          ["Calidad constructiva","Supervisión diaria en obra, materiales especificados por nosotros y pruebas antes de cada entrega.",'<path d="M6 34h28M10 34V16l10-8 10 8v18M16 34V24h8v10"/>'],
+          ["Proceso transparente","Presupuesto desglosado, avance semanal con fotos y un solo contacto durante toda la obra.",'<rect x="8" y="6" width="24" height="28"/><path d="M13 14h14M13 20h14M13 26h8"/>'],
+          ["Trayectoria comprobada","Quince años de obra entregada en la Ciudad de México y el interior de la República.",'<path d="M6 32 16 20l7 7 11-15"/><path d="M26 12h8v8"/>'],
+          ["Diseño con propósito","Cada decisión de proyecto responde al terreno, al clima y a la forma de vivir del cliente.",'<circle cx="20" cy="20" r="12"/><path d="M20 8v24M8 20h24"/>']
+        ].map(([t,d,ic])=>`<div class="why-item"><svg class="ico" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2">${ic}</svg><h3>${t}</h3><p>${d}</p></div>`).join("")}
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="label sec-num">04 — Trayectoria</div><h2>En números</h2></div>
+        <p class="lede">Cifras acumuladas desde 2011.</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="n">12</span><span class="label">Proyectos entregados</span></div>
+        <div class="stat"><span class="n">15<sup>años</sup></span><span class="label">De experiencia</span></div>
+        <div class="stat"><span class="n">18k<sup>m²</sup></span><span class="label">Construidos</span></div>
+        <div class="stat"><span class="n">100<sup>%</sup></span><span class="label">Entregas en tiempo</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="label sec-num">05 — Elige tu camino</div><h2>¿Qué estás buscando?</h2></div>
+      </div>
+      <div class="paths">
+        <a class="path" href="#contacto">
+          ${photo(PROJECTS[0].imgs.terraza,"Terraza de Casa 501","")}<div class="shade"></div>
+          <span class="mono">Para habitar</span>
+          <h3>Busco un hogar</h3>
+          <p>Conoce las residencias disponibles o cuéntanos cómo quieres vivir y diseñamos tu casa.</p>
+          <span class="link-arrow">Hablar con un asesor <span>↗</span></span>
+        </a>
+        <a class="path" href="#contacto">
+          ${photo(PROJECTS[0].imgs.hero,"Jardín de Casa 501","")}<div class="shade"></div>
+          <span class="mono">Para invertir</span>
+          <h3>Busco invertir</h3>
+          <p>Accede a preventas, proyecciones de plusvalía y esquemas de coinversión en nuestros desarrollos.</p>
+          <span class="link-arrow">Ver oportunidades <span>↗</span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+  ${band()}`;
+}
+
+function band(){
+  return `<section class="band"><div class="wrap band-in">
+    <div><div class="label">Contacto</div><h2>Hablemos de tu próxima casa.</h2></div>
+    <div class="band-side"><p>Agenda una visita a obra o una llamada con el equipo de proyecto.</p><a href="#contacto" class="btn btn-light">Agendar llamada</a></div>
+  </div></section>`;
+}
+
+function vProjects(){
+  return `
+  <section class="page-top"><div class="wrap row">
+    <div><div class="label" style="margin-bottom:22px">Portafolio</div><h1>Proyectos</h1></div>
+    <p class="lede">Casas diseñadas a la medida de su terreno. Hoy tenemos un proyecto en preventa.</p>
+  </div></section>
+  <div class="wrap" style="padding-top:40px">
+    <div class="grid-proj one">
+      ${PROJECTS.map((p,i)=>`
+      <a class="card" href="#p-${p.slug}">
+        <div class="img">${photo(p.imgs.main,esc(p.name))}</div>
+        <div class="top"><span class="mono" style="color:var(--faint)">${idx(i)}</span><span class="mono">${esc(p.state)}</span></div>
+        <h3>${esc(p.name)}</h3>
+        <div class="top"><span class="place">${esc(p.placeLong)}</span><span class="mono" style="color:var(--faint)">${p.area} m² · ${p.lot.toLocaleString("es-MX")} m² terreno</span></div>
+      </a>`).join("")}
+    </div>
+  </div>
+  ${band()}`;
+}
+
+function vProject(p){
+  const i=PROJECTS.indexOf(p);
+  const specs=[["Superficie construida",p.area+" m²"],["Terreno",p.lot.toLocaleString("es-MX")+" m²"],["Niveles","1 planta"],["Recámaras",p.rooms],["Baños completos",p.baths],["Estacionamiento",p.parking+" autos"],["Terraza","Fogatero y jacuzzi"],["Entrega",p.delivery+" desde inicio"],["Precio de obra","Fijo por contrato"],["Escrituración","Inmediata, libre de gravamen"]];
+  return `
+  <div class="pd-banner">${photo(p.imgs.hero,esc(p.name)+" vista desde el jardín")}</div>
+  <div class="wrap">
+    <div class="pd-meta">
+      <div><div class="label">Proyecto</div><h1>${esc(p.name)}</h1></div>
+      <div><div class="label">Ubicación</div><div class="v">${esc(p.placeLong)}<br><span style="color:var(--muted)">A 1 hora de León</span></div></div>
+      <div><div class="label">Estado</div><div class="v mono">${esc(p.state)}</div></div>
+      <div><div class="label">Detalle</div><div class="v">Construcción: ${p.area} m²<br>Terreno: ${p.lot.toLocaleString("es-MX")} m²<br>Tipo: ${esc(p.type)}</div></div>
+    </div>
+    <div class="pd-desc">
+      <div class="label">Descripción</div>
+      <div>${p.desc.map(d=>`<p>${esc(d)}</p>`).join("")}</div>
+    </div>
+    <div class="pd-gal">
+      <div class="c">${photo(p.imgs.terraza,"Terraza con estancia abierta, fogatero y jacuzzi")}</div>
+      <div class="a">${photo(p.imgs.main,"Acceso con muros de piedra y pérgola de madera")}</div>
+      <div class="b">${photo(p.imgs.hero,"Muro de stucco y jardín")}</div>
+    </div>
+    <div class="pd-specs">
+      <div class="label" style="color:var(--faint)">Ficha técnica</div>
+      <div class="spec-list">${specs.map(([k,v])=>`<div class="spec"><span class="k">${k}</span><span class="val">${v}</span></div>`).join("")}</div>
+    </div>
+    <div class="pd-next">
+      <div><div class="label" style="margin-bottom:16px">Preventa abierta</div><h2>Agenda una visita al terreno.</h2></div>
+      <a href="#contacto" class="btn btn-dark">Solicitar informes</a>
+    </div>
+  </div>
+  ${band()}`;
+}
+
+function vAbout(){
+  const steps=[
+    ["Terreno y viabilidad","2–4 semanas","Analizamos el predio, el uso de suelo y el presupuesto antes de trazar una línea."],
+    ["Proyecto arquitectónico","8–12 semanas","Anteproyecto, proyecto ejecutivo e ingenierías, con renders y maquetas para cada decisión."],
+    ["Permisos y licencias","6–10 semanas","Gestionamos licencia de construcción, manifestaciones y trámites ante la alcaldía."],
+    ["Obra","10–18 meses","Construcción con equipo propio, supervisión diaria y reporte semanal de avance."],
+    ["Entrega y garantía","5 años","Entregamos con manual de la casa y garantía estructural. Seguimos disponibles después."]
+  ];
+  const team=[["Nombre Apellido","Dirección general"],["Nombre Apellido","Dirección de proyecto"],["Nombre Apellido","Dirección de obra"],["Nombre Apellido","Relación con clientes"]];
+  return `
+  <section class="page-top"><div class="wrap row">
+    <div><div class="label" style="margin-bottom:22px">Nosotros</div><h1>Diseñamos y<br>construimos.</h1></div>
+    <p class="lede">Un solo equipo, del terreno a la entrega de llaves.</p>
+  </div></section>
+  <div class="wrap">
+    <div class="about-intro">
+      <div class="label" style="color:var(--faint)">Estudio</div>
+      <div>
+        <p class="big">FCúbica nace en 2011 con una idea sencilla: la casa mejor pensada es la que diseña y construye el mismo equipo. Desde entonces hemos entregado doce residencias en cinco estados.</p>
+        <div class="body">
+          <p>Trabajamos con pocos proyectos al año para dar a cada uno la atención que merece. El arquitecto que dibuja la casa es el mismo que la supervisa en obra.</p>
+          <p>Preferimos materiales honestos que envejecen bien: piedra, concreto aparente, madera y acero. Diseñamos para el clima de cada lugar antes que para la foto.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="height:clamp(280px,42vw,560px)">${photo(PROJECTS[0].imgs.terraza,"Casa 501","Render · Casa 501")}</div>
+  <section class="sec"><div class="wrap">
+    <div class="sec-head"><div><div class="label sec-num">Proceso</div><h2>Cómo trabajamos</h2></div><p class="lede">Cinco etapas con tiempos estimados para una residencia unifamiliar.</p></div>
+    <div class="process">${steps.map(([t,d,p],i)=>`<div class="step"><h3><span class="mono" style="color:var(--faint);margin-right:14px;vertical-align:middle">${idx(i)}</span>${t}</h3><span class="mono" style="color:var(--muted)">${d}</span><p>${p}</p></div>`).join("")}</div>
+  </div></section>
+  <section class="sec" style="padding-top:0"><div class="wrap">
+    <div class="sec-head"><div><div class="label sec-num">Equipo</div><h2>Quiénes somos</h2></div></div>
+    <div class="team">${team.map(([n,r],i)=>`<div class="person">${art(["warm","stone","earth","dusk"][i],60+i,"Retrato")}<h3>${n}</h3><span class="label">${r}</span></div>`).join("")}</div>
+  </div></section>
+  ${band()}`;
+}
+
+function vContact(){
+  return `
+  <section class="page-top"><div class="wrap row">
+    <div><div class="label" style="margin-bottom:22px">Contacto</div><h1>Hablemos.</h1></div>
+    <p class="lede">Respondemos en menos de 24 horas hábiles.</p>
+  </div></section>
+  <div class="wrap">
+    <div class="contact">
+      <div class="c-info">
+        <div><div class="label">Teléfono</div><div class="v">+52 55 0000 0000</div></div>
+        <div><div class="label">Correo</div><div class="v">hola@fcubica.mx</div></div>
+        <div><div class="label">Estudio</div><div class="v">Polanco, CDMX</div></div>
+        <div><div class="label">Horario</div><div class="v">Lun–Vie · 9:00–18:00</div></div>
+      </div>
+      <form class="form" id="cform" novalidate>
+        <div class="field full"><label>Me interesa</label>
+          <div class="seg" role="group">
+            ${["Comprar una residencia","Construir en mi terreno","Invertir en preventa"].map((s,i)=>`<button type="button" class="chip" data-interest="${s}" aria-pressed="${i===0}">${s}</button>`).join("")}
+          </div>
+        </div>
+        <div class="field"><label for="f-name">Nombre</label><input id="f-name" name="name" autocomplete="name" required></div>
+        <div class="field"><label for="f-phone">Teléfono</label><input id="f-phone" name="phone" type="tel" autocomplete="tel"></div>
+        <div class="field"><label for="f-email">Correo</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="f-proj">Proyecto</label>
+          <select id="f-proj" name="project"><option value="">Selecciona</option>${PROJECTS.map(p=>`<option>${esc(p.name)}</option>`).join("")}</select>
+        </div>
+        <div class="field full"><label for="f-msg">Mensaje</label><textarea id="f-msg" name="message" placeholder="Cuéntanos sobre tu terreno, presupuesto o el proyecto que te interesa."></textarea></div>
+        <div class="form-end">
+          <small id="f-err" aria-live="polite">Nombre y correo son obligatorios.</small>
+          <button class="btn btn-dark" type="submit">Enviar mensaje</button>
+        </div>
+      </form>
+    </div>
+  </div>`;
+}
+
+/* ---------- Router ---------- */
+const app=$("#app"), hdr=$("#hdr");
+function route(){
+  const h=(location.hash||"#inicio").slice(1);
+  let html, page=h;
+  if(h.startsWith("p-")&&byslug(h.slice(2))){html=vProject(byslug(h.slice(2)));page="proyectos"}
+  else if(h==="proyectos")html=vProjects();
+  else if(h==="nosotros")html=vAbout();
+  else if(h==="contacto")html=vContact();
+  else {html=vHome();page="inicio"}
+  app.innerHTML=html;
+  document.querySelectorAll("[data-nav]").forEach(a=>{if(a.dataset.nav===page)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  hdr.dataset.page=page;
+  $("#mnav").hidden=true;
+  window.scrollTo({top:0,behavior:"instant"});
+  onScroll();
+  bind();
+}
+function bind(){
+  document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{filter=b.dataset.filter;const y=scrollY;app.innerHTML=vProjects();bind();scrollTo(0,y)});
+  document.querySelectorAll("[data-interest]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-interest]").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+  const f=$("#cform");
+  if(f)f.onsubmit=e=>{
+    e.preventDefault();
+    const n=$("#f-name").value.trim(), m=$("#f-email").value.trim();
+    if(!n||!/^\S+@\S+\.\S+$/.test(m)){$("#f-err").textContent=!n?"Escribe tu nombre para continuar.":"Revisa el correo: falta la @ o el dominio.";$("#f-err").style.color="#9b3b2a";return}
+    f.innerHTML=`<div class="sent"><div class="label" style="margin-bottom:14px">Formulario de muestra</div><h3>Gracias, ${esc(n.split(" ")[0])}.</h3><p>Este formulario todavía no está conectado, así que tu mensaje no se envió. Mientras tanto, escríbenos a hola@fcubica.mx o llama al +52 55 0000 0000.</p></div>`;
+  };
+}
+function onScroll(){
+  const over=hdr.dataset.page==="inicio"&&scrollY<40;
+  hdr.classList.toggle("over",over);
+}
+addEventListener("scroll",onScroll,{passive:true});
+addEventListener("hashchange",route);
+$("#menuOpen").onclick=()=>{$("#mnav").hidden=false};
+$("#menuClose").onclick=()=>{$("#mnav").hidden=true};
+route();
+</script>
+</body>
+</html>
